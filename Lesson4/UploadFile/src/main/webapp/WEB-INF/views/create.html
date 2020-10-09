@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form th:action="@{save}" th:object="${person}" method="post" enctype="multipart/form-data">
+        <label th:text="Name"></label>
+        <input type="text" th:field="*{name}"/>
+        <label th:text="IMG"></label>
+        <input type="file" th:field="*{image}">
+        <input type="submit" th:value="Save">
+    </form>
+
+</body>
+</html>
