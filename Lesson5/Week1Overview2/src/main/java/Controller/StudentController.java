@@ -2,20 +2,26 @@ package Controller;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import Service.Student.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
 import Model.Student;
+import Model.StudentForm;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
 
 
 @Controller
 @RequestMapping("/students")
 public class StudentController {
+    @Autowired
+    private Environment environment;
+
     @Autowired
     StudentService studentService;
 
@@ -28,13 +34,24 @@ public class StudentController {
 
     @GetMapping("/create")
     public String showAddForm(Model model) {
-        model.addAttribute("student", new Student());
+        model.addAttribute("student", new StudentForm());
         return "create";
     }
 
     @PostMapping("/create")
-    public String saveStudent(Student student) {
+    public String saveStudent(@ModelAttribute("student") StudentForm studentForm) {
+        Student student = new Student(studentForm.getId(), studentForm.getName());
+        String fileUpload = environment.getProperty("file_upload");
+        MultipartFile file = studentForm.getImage();
+        String image = file.getOriginalFilename();
+        student.setImage(image);
+        try {
+            FileCopyUtils.copy(file.getBytes(), new File(fileUpload + image));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         studentService.save(student);
+//        model.addAttribute("student", student);
         return "redirect:/students";
     }
 

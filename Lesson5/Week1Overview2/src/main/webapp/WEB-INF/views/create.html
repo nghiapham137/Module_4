@@ -9,6 +9,8 @@
     <form th:action="@{/students/create}" method="post" th:object="${student}">
         <label for="name">Name</label>
         <input type="text" id="name" th:field="*{name}">
+        <label for="image">Image</label>
+        <input type="file" id="image" th:field="*{image}">
         <input type="submit" value="Save">
     </form>
 </body>
